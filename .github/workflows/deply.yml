@@ -1,4 +1,4 @@
-name: Deploy to EC2 (Self Hosted)
+name: Deploy with Docker to EC2
 
 on:
   push:
@@ -13,23 +13,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Show current directory
-        run: |
-          pwd
-          ls -la
+      - name: Build Docker image
+        run: docker build -t flask-app .
 
-      - name: Create virtual environment and install dependencies
+      - name: Stop and remove old container
         run: |
-          python3 -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements.txt
+          docker stop flask-container || true
+          docker rm flask-container || true
 
-      - name: Stop existing Flask app
+      - name: Run new container
         run: |
-          pkill -f "python app.py" || true
-
-      - name: Start Flask app
-        run: |
-          source venv/bin/activate
-          nohup python app.py > app.log 2>&1 &
+          docker run -d \
+            -p 5000:5000 \
+            --name flask-container \
+            --restart always \
+            flask-app
