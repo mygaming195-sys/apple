@@ -1,0 +1,27 @@
+name: Deploy to EC2 (Self Hosted)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted   # THIS is important
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Restart Flask App
+        run: |
+          pkill -f app.py || true
+          source venv/bin/activate
+          nohup python app.py > app.log 2>&1 &
