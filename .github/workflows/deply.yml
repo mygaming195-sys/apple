@@ -7,21 +7,29 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted   # THIS is important
+    runs-on: self-hosted
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Show current directory
+        run: |
+          pwd
+          ls -la
+
+      - name: Create virtual environment and install dependencies
         run: |
           python3 -m venv venv
           source venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Restart Flask App
+      - name: Stop existing Flask app
         run: |
-          pkill -f app.py || true
+          pkill -f "python app.py" || true
+
+      - name: Start Flask app
+        run: |
           source venv/bin/activate
           nohup python app.py > app.log 2>&1 &
