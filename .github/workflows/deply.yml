@@ -10,15 +10,8 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install AWS CLI (if not present)
-        run: |
-          if ! command -v aws &> /dev/null
-          then
-            sudo apt update
-            sudo apt install -y awscli
-          fi
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set Image Tag
         run: echo "IMAGE_TAG=${{ github.run_number }}" >> $GITHUB_ENV
