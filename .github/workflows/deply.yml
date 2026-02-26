@@ -10,11 +10,15 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Set Image Tag
         run: echo "IMAGE_TAG=${{ github.run_number }}" >> $GITHUB_ENV
+
+      - name: Configure AWS Region
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ap-south-1
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
